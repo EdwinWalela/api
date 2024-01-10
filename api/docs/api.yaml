@@ -1,0 +1,207 @@
+openapi: 3.0.0
+info:
+  version: '1'
+  title: 'Scanwize Authentication and Authorization API'
+  description: 'Auth API Documentation'
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Test server (localhost)
+components:
+  securitySchemes:
+    bearerAuth:  
+      type: http
+      scheme: bearer
+  schemas:
+    User:
+      type: object
+      properties:
+        id: 
+          type: number
+          description: User ID
+          example: 23
+        name: 
+          type: string
+          description: username
+          example: edwin
+        email: 
+          type: string
+          description: Email address
+          example: edwin@mail.com
+        role: 
+          type: number
+          description: Role ID
+          example: 4
+        createdAt: 
+          type: string
+          description: User creation date
+          example: '2024-01-09T10:59:00.534Z'
+        updatedAt: 
+          type: string
+          description: User last update date
+          example: '2024-01-09T10:59:00.534Z'
+    Role:
+      type: object
+      properties:
+        id: 
+          type: number
+          description: Role ID
+          example: 23
+        name: 
+          type: string
+          description: Role name
+          example: admin
+        createdAt: 
+          type: string
+          description: Role creation date
+          example: '2024-01-09T10:59:00.534Z'
+        updatedAt: 
+          type: string
+          description: Role last update date
+          example: '2024-01-09T10:59:00.534Z'
+security:
+  - bearerAuth: []
+paths:
+  /auth/register:
+    post:
+      summary: Register user 
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    example: 'user@mail.com'
+                  password:
+                    type: string
+                    example: 'password'
+                  username:
+                    type: string
+                    example: 'username'
+                  roleId:
+                    type: number
+                    example: 2
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: User created
+                  id: 
+                    type: number
+                    example: 12
+        '400':
+          description: Account not created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: 
+                    type: string
+                    example: Email already in use
+  /auth/login:
+    post:
+      summary: User login 
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    example: 'user@mail.com'
+                  password:
+                    type: string
+                    example: 'password'
+      responses:
+        '200':
+          description: Valid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: 
+                    type: string
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNjY4ODYyMDA4LCJleHAiOjE2NzE0NTQwMDh9.LcpTTOEb7hJ85cckRPiA304R7PgcBymASqEpHiPiWZM'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: 
+                    type: string
+                    example: invalid credentials
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: 
+                    type: string
+                    example: user not found
+  /roles:
+    get:
+      summary: Retrieve all roles 
+      tags:
+        - Roles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'          
+  /users:
+    get:
+      summary: Retrieve all users 
+      tags:
+        - Users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /users/{id}:
+    get:
+      summary: Retrieve user using ID 
+      tags:
+        - Users
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: ID of the user to retrieve
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
